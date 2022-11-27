@@ -1,34 +1,40 @@
-const express = require('express');
+const express = require('express')
+const dotenv = require('dotenv')
+dotenv.config()
 
-const app = express();
-const PORT = process.env.PORT || 5000;
-const server = app.listen(PORT, () => console.log(`Listening at http://localhost:${PORT}...`));
+const PORT = 4000;
+const INDEX = '/index.html';
 
+const app = express()
+app.use((_req, res) => res.sendFile(INDEX, { root: __dirname }))
+
+const server = app.listen(PORT, () => console.log(`Listening on http://localhost:${PORT}...`));
+
+// socket server
 const socket = require('socket.io');
-const io = socket(server);
-
-const path = require('path');
-app.use(express.static(path.join(__dirname, '/build/')));
-app.use(express.json());
-
-io.on('connection', (socket) => {
-  socket.on('requireTurn', (data) => {
-      const room = JSON.parse(data).room
-      io.to(room).emit('playerTurn', data)
-  })
-
-  socket.on('create', room => {
-      socket.join(room)
-  })
-
-  socket.on('join', room => {
-      socket.join(room)
-      io.to(room).emit('opponent_joined')
-  })
-
-  socket.on('requireRestart', (data) => {
-      const room = JSON.parse(data).room
-      io.to(room).emit('restart')
-  })
+const io = socket(server, {
+    cors: {
+        origin: 'http://localhost:3000'
+    }
 });
 
+io.on('connection', (socket) => {
+    socket.on('reqTurn', (data) => {
+        const room = JSON.parse(data).room
+        io.to(room).emit('playerTurn', data)
+    })
+
+    socket.on('create', room => {
+        socket.join(room)
+    })
+
+    socket.on('join', room => {
+        socket.join(room)
+        io.to(room).emit('opponent_joined')
+    })
+
+    socket.on('reqRestart', (data) => {
+        const room = JSON.parse(data).room
+        io.to(room).emit('restart')
+    })
+});
