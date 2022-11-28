@@ -1,7 +1,7 @@
 const express = require('express')
 const app = express()
 
-const PORT = process.env.PORT || 4000;
+const PORT = 4000;
 
 const path = require('path');
 app.use(express.static(path.join(__dirname, '/build/')));
@@ -13,7 +13,7 @@ const server = app.listen(PORT, () => console.log(`Listening on http://localhost
 const socket = require('socket.io');
 const io = socket(server, {
     cors: {
-        origin: 'http://localhost:4000'
+        origin: 'http://localhost:3000'
     }
 });
 
