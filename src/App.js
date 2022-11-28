@@ -3,8 +3,8 @@ import { useLocation } from 'react-router';
 import { useClipboard } from 'use-clipboard-copy';
 import './App.css';
 import Box from './Box';
-
 import io from 'socket.io-client';
+
 const socket = io('http://localhost:4000');
 
 function App() {
@@ -95,17 +95,17 @@ function App() {
     }
   }, [paramsRoom]);
 
-   const clipboard = useClipboard();
+  const clipboard = useClipboard();
 
 
-    const shareLink = useCallback(
-      () => {
-        const url = `${window.location.href}?room=${room}`;
-        clipboard.copy(url);
-        alert('Link copied to clipboard')
-      },
-      [clipboard.copy, room]
-    );
+  const shareLink = useCallback(
+    () => {
+      const url = `${window.location.href}?room=${room}`;
+      clipboard.copy(url);
+      alert('Link copied to clipboard')
+    },
+    [clipboard.copy, room]
+  );
 
 
   return (
@@ -117,7 +117,7 @@ function App() {
       <div>
         Turn: {myTurn ? 'Yours' : 'Opponent`s'}
       </div>
-      
+
       <br />
       {hasOpponent ? '' : 'Waiting for opponent...'}
       <p>

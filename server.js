@@ -1,8 +1,7 @@
 const express = require('express')
 const app = express()
 
-const PORT = 4000;
-const INDEX = '/index.html';
+const PORT = process.env.PORT || 4000;
 
 const path = require('path');
 app.use(express.static(path.join(__dirname, '/build/')));
@@ -11,7 +10,6 @@ app.use(express.json());
 
 const server = app.listen(PORT, () => console.log(`Listening on http://localhost:${PORT}...`));
 
-// socket server
 const socket = require('socket.io');
 const io = socket(server, {
     cors: {
