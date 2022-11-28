@@ -13,7 +13,7 @@ const server = app.listen(PORT, () => console.log(`Listening on http://localhost
 const socket = require('socket.io');
 const io = socket(server, {
     cors: {
-        origin: 'http://localhost:3000'
+        origin: 'https://noughts-and-crosses.herokuapp.com/'
     }
 });
 
