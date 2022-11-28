@@ -5,7 +5,7 @@ import './App.css';
 import Box from './Box';
 import io from 'socket.io-client';
 
-const socket = io('https://noughts-and-crosses.herokuapp.com/');
+const socket = io('http://localhost:4000');
 
 function App() {
   const [game, setGame] = useState(Array(9).fill(''));
