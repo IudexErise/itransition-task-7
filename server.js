@@ -1,12 +1,13 @@
 const express = require('express')
 const app = express()
 
-const PORT = 4000;
 
 const path = require('path');
 app.use(express.static(path.join(__dirname, '/build/')));
 
 app.use(express.json());
+
+const PORT = process.env.PORT || 4000;
 
 const server = app.listen(PORT, () => console.log(`Listening on http://localhost:${PORT}...`));
 
