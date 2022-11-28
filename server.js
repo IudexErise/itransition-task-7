@@ -1,6 +1,5 @@
 const express = require('express')
-const dotenv = require('dotenv')
-dotenv.config()
+
 
 const PORT = 4000;
 const INDEX = '/index.html';

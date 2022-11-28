@@ -1,6 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useLocation } from 'react-router';
+import { useClipboard } from 'use-clipboard-copy';
 import './App.css';
+import Box from './Box';
 
 import io from 'socket.io-client';
 const socket = io('http://localhost:4000');
@@ -10,7 +12,7 @@ function App() {
   const [turnNumber, setTurnNumber] = useState(0);
   const [myTurn, setMyTurn] = useState(true);
   const [winner, setWinner] = useState(false);
-  const [xo, setXO] = useState('X');
+  const [crossesNoughts, setCrossesNoughts] = useState('X');
   const [player, setPlayer] = useState('');
   const [hasOpponent, setHasOpponent] = useState(false);
   const [share, setShare] = useState(false);
@@ -24,7 +26,7 @@ function App() {
 
   const turn = (index) => {
     if (!game[index] && !winner && myTurn && hasOpponent) {
-      socket.emit('reqTurn', JSON.stringify({ index, value: xo, room }));
+      socket.emit('reqTurn', JSON.stringify({ index, value: crossesNoughts, room }));
     }
   };
 
@@ -47,9 +49,9 @@ function App() {
     });
 
     if (turnNumber === 0) {
-      setMyTurn(xo === 'X' ? true : false);
+      setMyTurn(crossesNoughts === 'X' ? true : false);
     }
-  }, [game, turnNumber, xo]);
+  }, [game, turnNumber, crossesNoughts]);
 
   useEffect(() => {
     socket.on('playerTurn', (json) => {
@@ -82,46 +84,51 @@ function App() {
   }, [turnData, game, turnNumber, winner, myTurn]);
 
   useEffect(() => {
-    if (paramsRoom) {
-      // means you are player 2
-      setXO('O');
-      socket.emit('join', paramsRoom);
-      setRoom(paramsRoom);
-      setMyTurn(false);
-    } else {
-      // means you are player 1
+    if (!paramsRoom) {
       const newRoomName = random();
       socket.emit('create', newRoomName);
       setRoom(newRoomName);
       setMyTurn(true);
+    } else {
+      setCrossesNoughts('O');
+      socket.emit('join', paramsRoom);
+      setRoom(paramsRoom);
+      setMyTurn(false);
     }
   }, [paramsRoom]);
+
+   const clipboard = useClipboard();
+
+
+    const shareLink = useCallback(
+      () => {
+        const url = `${window.location.href}?room=${room}`;
+        clipboard.copy(url);
+        alert('Link copied to clipboard')
+      },
+      [clipboard.copy, room]
+    );
+
 
   return (
     <div className="container">
       Room: {room}
-      <button className="btn" onClick={() => setShare(!share)}>
+      <button className="button" onClick={shareLink}>
         Share
       </button>
-      {share ? (
-        <>
-          <br />
-          <br />
-          Share link: <input type="text" value={`${window.location.href}?room=${room}`} readOnly />
-        </>
-      ) : null}
-      <br />
-      <br />
-      Turn: {myTurn ? 'You' : 'Opponent'}
+      <div>
+        Turn: {myTurn ? 'Yours' : 'Opponent`s'}
+      </div>
+      
       <br />
       {hasOpponent ? '' : 'Waiting for opponent...'}
       <p>
         {winner || turnNumber === 9 ? (
-          <button className="btn" onClick={sendRestart}>
+          <button className="button" onClick={sendRestart}>
             Restart
           </button>
         ) : null}
-        {winner ? <span>We have a winner: {player}</span> : turnNumber === 9 ? <span>It's a tie!</span> : <br />}
+        {winner ? <span>Winner is: {player}</span> : turnNumber === 9 ? <span>It's a draw!</span> : <br />}
       </p>
       <div className="row">
         <Box index={0} turn={turn} value={game[0]} />
@@ -142,13 +149,6 @@ function App() {
   );
 }
 
-const Box = ({ index, turn, value }) => {
-  return (
-    <div className="box" onClick={() => turn(index)}>
-      {value}
-    </div>
-  );
-};
 
 const combinations = [
   [0, 1, 2],
