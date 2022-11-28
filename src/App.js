@@ -5,7 +5,9 @@ import './App.css';
 import Box from './Box';
 import io from 'socket.io-client';
 
-const socket = io('http://localhost:4000');
+const socket = io();
+
+window.socket = socket;
 
 function App() {
   const [game, setGame] = useState(Array(9).fill(''));
