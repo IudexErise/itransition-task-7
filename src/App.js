@@ -15,7 +15,6 @@ function App() {
   const [crossesNoughts, setCrossesNoughts] = useState('X');
   const [player, setPlayer] = useState('');
   const [hasOpponent, setHasOpponent] = useState(false);
-  const [share, setShare] = useState(false);
   const [turnData, setTurnData] = useState(false);
 
   const location = useLocation();
@@ -64,7 +63,6 @@ function App() {
 
     socket.on('opponent_joined', () => {
       setHasOpponent(true);
-      setShare(false);
     });
   }, []);
 

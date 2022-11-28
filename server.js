@@ -1,11 +1,13 @@
 const express = require('express')
-
+const app = express()
 
 const PORT = 4000;
 const INDEX = '/index.html';
 
-const app = express()
-app.use((_req, res) => res.sendFile(INDEX, { root: __dirname }))
+const path = require('path');
+app.use(express.static(path.join(__dirname, '/build/')));
+
+app.use(express.json());
 
 const server = app.listen(PORT, () => console.log(`Listening on http://localhost:${PORT}...`));
 
